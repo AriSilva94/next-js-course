@@ -1,8 +1,15 @@
 import Image from "next/image";
 import ArticleService from "@/services/Articles";
+import { Pagination } from "@/components";
 
-export default async function Home() {
-  const articles = await ArticleService.getHomeArticles();
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: { page?: string; limit?: string };
+}) {
+  const currentPage = Number(searchParams?.page) || 1;
+  const limit = Number(searchParams?.limit) || 10;
+  const articles = await ArticleService.getHomeArticles(currentPage, limit);
   const latestArticles = await ArticleService.getHomeLatestArticles();
 
   return (
@@ -65,7 +72,12 @@ export default async function Home() {
                 );
               })}
             </div>
-            <div>Pagination</div>
+            <div className="my-8">
+              <Pagination
+                currentPage={articles.metadata.page}
+                totalPages={articles.metadata.totalPages}
+              />
+            </div>
           </div>
           <div className="col-span-4 bg-emerald-500">D</div>
         </div>
